@@ -4,7 +4,7 @@
 *	These funcs are called through interrupts
 **/
 
-#include "../../../lib_uart/uart.h"
+#include "../../lib_uart/uart.h"
 #include "onewire.h"
 
 /*	Utility functions	*/

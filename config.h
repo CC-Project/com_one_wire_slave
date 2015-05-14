@@ -2,10 +2,8 @@
 *	Configuration file for the One Wire bus
 **/
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
-
-
+#ifndef CONFIG_OW_S_H
+#define CONFIG_OW_S_H
 	#define DEBUG // Enable debugging
 	#ifdef DEBUG
 		#define BAUD_RATE 0x19
@@ -22,5 +20,4 @@
 	#define OW_BUS_PIN 		PIND
 	#define OW_BUS_PORT		PORTD
 	#define OW_BUS_PIN_MASK	_BV(3)
-
 #endif

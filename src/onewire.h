@@ -5,7 +5,7 @@
 #ifndef ONEWIRE_H_
 #define ONEWIRE_H_
 	#include "../config.h"
-	#include "../../../lib_data/data.h"
+	#include "../../lib_data/data.h"
 	#include <avr/io.h>
 	#include <util/delay.h>
 
@@ -18,5 +18,5 @@
 
 	/*	One Wire functions	*/
 	void control(uint32_t* nb_data, struct Data* _data); // Func to decide what action to take
-	void	ow_reset(void);
+	void ow_reset(void);
 #endif

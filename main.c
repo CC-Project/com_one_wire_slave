@@ -11,7 +11,9 @@
 uint32_t nb_data;
 struct Data* _data;
 
-int main_slave(void)
+void main_slave();
+
+void main_slave()
 {
     _data = data_generate(32);
     nb_data = 0;
