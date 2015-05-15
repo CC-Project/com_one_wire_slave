@@ -11,9 +11,8 @@
 uint32_t nb_data;
 struct Data* _data;
 
-void main_slave();
 
-void main_slave()
+void main(void)
 {
     _data = data_generate(32);
     nb_data = 0;
@@ -44,7 +43,6 @@ void main_slave()
         _delay_ms(3000);
 
 	}
-	return 1;
 }
 
 
