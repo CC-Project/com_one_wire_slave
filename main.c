@@ -11,19 +11,17 @@
 uint32_t nb_data;
 struct Data* _data;
 
-
-void main(void)
+int main(void)
 {
     _data = data_generate(32);
     nb_data = 0;
 
 	#ifdef DEBUG
-		uart_init(BAUD_RATE);
-
 		//Setup led for debugging
         LED_DDR |= LED_PIN_MASK;
         LED_PORT &= ~LED_PIN_MASK;
 	#endif
+	uart_init(BAUD_RATE);
 
     // Pin change interrupt (INT1 pin)
     EICRA |= (1 << ISC11); // Falling edge
@@ -36,31 +34,33 @@ void main(void)
     //Main loop
 	for(;;)
 	{
-        char str[10];
-        sprintf(str, "%d", nb_data);
-        uart_tx_str(str);
-        uart_newline();
+	    if(nb_data == 32)
+        {
+            nb_data = 0;
+            data_show(_data);
+        }
         _delay_ms(3000);
-
 	}
 }
 
 
-ISR (INT1_vect) // If bus state changes
+ISR (INT1_vect) // Falling edge detected
 {
-    if(nb_data == 31)
-        nb_data = 0;
-
-    if(EICRA & (1 << ISC10)) // Rising edge
+    _delay_us(T/4);
+    if(bus_read())
     {
-        EICRA &= ~(1 << ISC10);
-        TCCR1B &= ~(1 << CS00); // Stop timer
-        control(&nb_data,_data);
+        if(nb_data < 31)
+        {
+            data_set(nb_data, 1, _data);
+        }
+        nb_data += 1;
     }
-    else // Falling edge
+    else
     {
-        EICRA |= (1 << ISC10);
-		TCCR1B |= (1 << CS00); // Start timer (no prescale)
-        TCNT1 = 0;
+        if(nb_data < 31)
+        {
+            data_set(nb_data, 0, _data);
+        }
+        nb_data += 1;
     }
 }
