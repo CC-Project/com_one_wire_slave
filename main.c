@@ -1,19 +1,20 @@
 /*
  * Main file.
  */
-
+#define DATA_SIZE 32
+#define DATA
 #include "config.h"
 #include "src/onewire.h"
 #include "../lib_data/data.h"
 #include "../lib_uart/uart.h"
-#include <avr/interrupt.h>
+#include <avr/.h>
 
 uint32_t nb_data;
-struct Data* _data;
+struct Data* data;
 
-int main(void)
+int main(void)interrupt
 {
-    _data = data_generate(32);
+    data = data_generate(DATA_SIZE);
     nb_data = 0;
 
 	#ifdef DEBUG
@@ -37,7 +38,8 @@ int main(void)
 	    if(nb_data == 32)
         {
             nb_data = 0;
-            data_show(_data);
+            data_show(data);
+            //decode(data)
         }
         _delay_ms(3000);
 	}
@@ -49,17 +51,17 @@ ISR (INT1_vect) // Falling edge detected
     _delay_us(T/4);
     if(bus_read())
     {
-        if(nb_data < 31)
+        if(nb_data < 32)
         {
-            data_set(nb_data, 1, _data);
+            data_set(nb_data, 1, data);
         }
         nb_data += 1;
     }
     else
     {
-        if(nb_data < 31)
+        if(nb_data < 32)
         {
-            data_set(nb_data, 0, _data);
+            data_set(nb_data, 0, data);
         }
         nb_data += 1;
     }
