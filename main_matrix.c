@@ -9,21 +9,26 @@
 #include "uart.h"
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include "hamming_config.h"
+#include "matrix.h"
+#include "hamming.h"
+
 
 volatile uint32_t i;
 uint8_t j;
-struct Data* data;
+struct Matrix* data;
 
 int main(void)
 {
-	i = 0;
+	struct Hamming_config* conf = hamming_generate_config();
+	i = 1;
 	j = 0;
-    data = data_generate(N);
+    data = matrix_generate(N,1);
 
 	#ifdef DEBUG
 		//Setup led for debugging
-        LED_DDR |= LED_PIN_MASK;
-        LED_PORT &=~LED_PIN_MASK;
+        //LED_DDR |= LED_PIN_MASK;
+        //LED_PORT &=~LED_PIN_MASK;
 	#endif
 	uart_init(BAUD_RATE);
 
@@ -39,9 +44,16 @@ int main(void)
     //Main loop
 	for(;;)
 	{
-	    if(i == 7)
+		sprintf(str, "%d\n", freeRam());
+		uart_tx_str(str);
+	    if(i == 8)
         {
-			i = 0;
+			struct Matrix* tmp = hamming_correction(data, conf);
+			struct Matrix* deco = hamming_decode(tmp, conf);
+			data_show(deco->data);
+			matrix_free(tmp);
+			matrix_free(deco);
+			i = 1;
         }
 	}
 }
@@ -52,11 +64,11 @@ ISR (INT1_vect) // Falling edge detected
     _delay_us(T/4);
     if(bus_read())
     {
-		data_set(i, 1, data);
+		matrix_set(data, i, 1, 1);
     }
     else
     {
-	    data_set(i, 0, data);
+	    matrix_set(data, i, 1, 0);
     }
 	i += 1;
 }
