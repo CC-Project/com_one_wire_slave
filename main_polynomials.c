@@ -5,8 +5,8 @@
 #define N 7
 #include "config.h"
 #include "src/onewire.h"
-#include "data.h"
-#include "uart.h"
+#include "../lib_data/data.h"
+#include "../lib_uart/uart.h"
 #include <avr/interrupt.h>
 #include <stdio.h>
 
@@ -19,6 +19,8 @@ int main(void)
 	i = 0;
 	j = 0;
     data = data_generate(N);
+	//poly_generator_init();
+	//poly_make_syndrome();
 
 	#ifdef DEBUG
 		//Setup led for debugging
