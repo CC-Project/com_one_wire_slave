@@ -3,6 +3,8 @@
  */
 
 #define N 7
+#include "../code_polynomials/config_polynomials.h"
+#include "../code_polynomials/src/poly.h"
 #include "config.h"
 #include "src/onewire.h"
 #include "../lib_data/data.h"
@@ -13,19 +15,24 @@
 volatile uint32_t i;
 uint8_t j;
 struct Data* data;
+Poly generator;
+Poly* syndrome;
 
 int main(void)
 {
+	// Init the lib
+	poly_init_generator();
+	make_syndrome();
+	
 	i = 0;
 	j = 0;
     data = data_generate(N);
-	//poly_generator_init();
-	//poly_make_syndrome();
+
 
 	#ifdef DEBUG
-		//Setup led for debugging
-        LED_DDR |= LED_PIN_MASK;
-        LED_PORT &=~LED_PIN_MASK;
+		// Setup led for debugging
+        //LED_DDR |= LED_PIN_MASK;
+        //LED_PORT &=~LED_PIN_MASK;
 	#endif
 	uart_init(BAUD_RATE);
 
@@ -38,15 +45,20 @@ int main(void)
 	// Enable interrupts.
 	sei();
 
-    //Main loop
+    // Main loop
 	for(;;)
 	{
+		uart_tx_str("te\n");
 	    if(i == 7)
         {
 			i = 0;
+			Poly deco = poly_decode(data);
+			data_show(deco);
+			data_free(deco);
         }
 	}
 }
+
 
 
 ISR (INT1_vect) // Falling edge detected
