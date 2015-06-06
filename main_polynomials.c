@@ -48,7 +48,6 @@ int main(void)
     // Main loop
 	for(;;)
 	{
-		uart_tx_str("te\n");
 	    if(i == 7)
         {
 			i = 0;
